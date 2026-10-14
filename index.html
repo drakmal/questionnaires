@@ -415,13 +415,24 @@
 
   footer {
     margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
     color: var(--muted);
-    font-size: 0.8rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    line-height: 1.55;
     text-align: center;
   }
 
-  footer p { margin: 4px auto; max-width: 680px; }
+  footer p {
+    margin: 0 auto 6px;
+    max-width: 600px;
+    text-wrap: balance;
+  }
+
+  footer .credit {
+    margin-top: 14px;
+    font-size: 0.75rem;
+  }
 </style>
 </head>
 <body>
@@ -492,10 +503,9 @@
 </section>
 
 <footer>
-  <p>This directory lists validation studies; it does not host questionnaire forms. Licence terms change, so check the official source before using or posting any questionnaire. Printed items in an article do not grant permission to use a licensed tool.</p>
-  <p>Psychometric details are summarised from abstracts. Bibliographic data for PubMed records from PubMed (National Library of Medicine).</p>
-  <p id="built"></p>
-  <p><a href="https://forms.gle/hrrC3HFErQ25yJsVA" target="_blank" rel="noopener">Suggest a questionnaire</a> · <a href="https://drakmal.com/">drakmal.com</a></p>
+  <p>This directory lists validation studies; it does not host the questionnaires themselves.</p>
+  <p>Licence terms can change, so check the official source before using or sharing any questionnaire. Items printed in an article do not give permission to use a licensed tool.</p>
+  <p class="credit">Psychometric details are summarised from study abstracts. Bibliographic data from PubMed (U.S. National Library of Medicine).</p>
 </footer>
 
 </div>
@@ -540,7 +550,6 @@
   if (M.meta.yearMin && M.meta.yearMax) coverage.push("Studies published " + M.meta.yearMin + "–" + M.meta.yearMax);
   if (builtText) coverage.push("Last updated " + builtText);
   document.getElementById("coverage").textContent = coverage.join(" · ");
-  document.getElementById("built").textContent = builtText ? "Last updated " + builtText + "." : "";
 
   // ---------- helpers ----------
   function el(tag, attrs, children) {
