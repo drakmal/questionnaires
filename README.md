@@ -1,4 +1,4 @@
-# Malaysia Health Questionnaires Directory
+# Validated Health Questionnaires in Malaysia
 
 Source for <https://questionnaires.drakmal.com/>, a searchable directory of health questionnaires
 developed, translated or validated in Malaysia. Static site on GitHub Pages; no build step on the host.
