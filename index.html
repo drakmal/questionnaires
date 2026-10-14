@@ -154,6 +154,10 @@
 
   .controls .search { grid-column: 1 / -1; }
 
+  /* Search and a single filter side by side. */
+  .controls--pair { grid-template-columns: 2fr 1fr; }
+  .controls--pair .search { grid-column: auto; }
+
   .controls label {
     display: flex;
     flex-direction: column;
@@ -477,12 +481,11 @@
 </section>
 
 <section class="panel" id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
-  <div class="controls">
+  <div class="controls controls--pair">
     <label class="search">Search
       <input type="search" id="tq" placeholder="Tool, licence, source…" autocomplete="off">
     </label>
     <label>Access / licence <select id="tf-access"></select></label>
-    <label>Status of check <select id="tf-status"></select></label>
   </div>
   <div class="status"><span id="tcount" aria-live="polite"></span></div>
   <div class="table-wrap">
@@ -493,8 +496,7 @@
           <th>Access / licence</th>
           <th>Licence details</th>
           <th>Where to get it</th>
-          <th>Status of check</th>
-          <th>Entries</th>
+          <th>Studies listed</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -539,7 +541,7 @@
       e.journal, e.languages, e.psychometrics].join(" ").toLowerCase();
   });
   tools.forEach(function (t) {
-    t.haystack = [t.key, t.example, t.access, t.licence, t.where, t.status].join(" ").toLowerCase();
+    t.haystack = [t.key, t.example, t.access, t.licence, t.where].join(" ").toLowerCase();
   });
 
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
@@ -647,7 +649,6 @@
     add("page", page > 1 ? String(page) : "");
     add("tq", tq.value.trim());
     add("taccess", tfAccess.value);
-    add("tstatus", tfStatus.value);
     history.replaceState(null, "", location.pathname + (params.length ? "?" + params.join("&") : ""));
   }
 
@@ -859,21 +860,18 @@
   // ---------- tool access ----------
   var tq = document.getElementById("tq");
   var tfAccess = document.getElementById("tf-access");
-  var tfStatus = document.getElementById("tf-status");
   var tbody = document.getElementById("tbody");
   var tcount = document.getElementById("tcount");
 
   fillSelect(tfAccess, "All access routes", byCount(tally(tools, function (t) { return t.access; })));
-  fillSelect(tfStatus, "Any", byCount(tally(tools, function (t) { return t.status; })));
 
   var toolsSorted = tools.slice().sort(function (a, b) { return a.key.localeCompare(b.key); });
 
   function renderTools() {
     var terms = tq.value.toLowerCase().split(/\s+/).filter(Boolean);
-    var access = tfAccess.value, status = tfStatus.value;
+    var access = tfAccess.value;
     var rows = toolsSorted.filter(function (t) {
       if (access && t.access !== access) return false;
-      if (status && t.status !== status) return false;
       for (var i = 0; i < terms.length; i++) {
         if (t.haystack.indexOf(terms[i]) === -1) return false;
       }
@@ -893,12 +891,11 @@
         ]),
         el("td", { "data-label": "Licence", text: t.licence }),
         el("td", { "data-label": "Where" }, [t.where, t.where && safeUrl(t.link) ? " · " : null, link(t.link, "Open")]),
-        el("td", { "data-label": "Status", text: t.status }),
-        el("td", { class: "num", "data-label": "Entries", text: String(t.entries) })
+        el("td", { class: "num", "data-label": "Studies listed", text: String(t.entries) })
       ]));
     });
     if (!rows.length) {
-      frag.appendChild(el("tr", null, [el("td", { colspan: "6", class: "empty", text: "No tools match." })]));
+      frag.appendChild(el("tr", null, [el("td", { colspan: "5", class: "empty", text: "No tools match." })]));
     }
     tbody.appendChild(frag);
     tcount.textContent = rows.length === tools.length
@@ -909,7 +906,6 @@
 
   tq.addEventListener("input", renderTools);
   tfAccess.addEventListener("change", renderTools);
-  tfStatus.addEventListener("change", renderTools);
 
   // ---------- initial state from the URL ----------
   var params = new URLSearchParams(location.search);
@@ -927,7 +923,6 @@
   setSelect(sortSel, params.get("sort"));
   tq.value = params.get("tq") || "";
   setSelect(tfAccess, params.get("taccess"));
-  setSelect(tfStatus, params.get("tstatus"));
 
   applyFilters();
   page = parseInt(params.get("page"), 10) || 1;
