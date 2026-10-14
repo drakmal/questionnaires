@@ -536,6 +536,7 @@
   var tools = toObjects(M.tools, M.meta.toolFields);
 
   entries.forEach(function (e) {
+    e.ready = e.access === "Free to use" && /^Yes/.test(e.items);
     e.langList = e.languages.split(/;\s*/).map(function (s) { return s.trim(); }).filter(Boolean);
     e.haystack = [e.instrument, e.domain, e.category, e.population, e.authors, e.title,
       e.journal, e.languages, e.psychometrics].join(" ").toLowerCase();
@@ -696,6 +697,12 @@
   fillSelect(fType, "All types", byCount(tally(entries, function (e) { return e.type; })));
   fillSelect(fLanguage, "All languages", byCount(tally(entries, function (e) { return e.langList; })));
   fillSelect(fAccess, "All access routes", byCount(tally(entries, function (e) { return e.access; })));
+  // "Ready to use" = free to use AND the Malaysian-version items are printed in the article or supplement.
+  var readyCount = entries.filter(function (e) { return e.ready; }).length;
+  fAccess.insertBefore(
+    el("option", { value: "ready", text: "Ready to use: free + items published (" + readyCount + ")" }),
+    fAccess.options[1] || null
+  );
 
   function citation(e) {
     var parts = [];
@@ -715,6 +722,7 @@
   function renderEntry(e) {
     var badges = el("div", { class: "badges" }, [
       el("span", { class: "badge", text: e.type }),
+      e.ready ? el("span", { class: "badge badge--green", text: "Ready to use" }) : null,
       e.access ? el("span", { class: "badge " + accessClass(e.access), text: e.access }) : null,
       e.inclusion === "multi" ? el("span", { class: "badge", text: "Multi-country sample" }) : null
     ]);
@@ -762,7 +770,7 @@
       if (cat && e.category !== cat) return false;
       if (type && e.type !== type) return false;
       if (lang && e.langList.indexOf(lang) === -1) return false;
-      if (access && e.access !== access) return false;
+      if (access === "ready" ? !e.ready : access && e.access !== access) return false;
       for (var i = 0; i < terms.length; i++) {
         if (e.haystack.indexOf(terms[i]) === -1) return false;
       }
