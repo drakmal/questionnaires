@@ -132,6 +132,12 @@
     border-bottom-color: var(--accent);
   }
 
+  .tabs .copy {
+    margin-left: auto;
+    align-self: center;
+    margin-bottom: 6px;
+  }
+
   .panel[hidden] { display: none; }
 
   .controls {
@@ -421,6 +427,7 @@
 <div class="tabs" role="tablist">
   <button role="tab" id="tab-dir" aria-controls="panel-dir" aria-selected="true">Directory</button>
   <button role="tab" id="tab-tools" aria-controls="panel-tools" aria-selected="false">Tool access</button>
+  <button class="btn copy" id="copy" type="button" title="Copy a link to this exact view">Copy link</button>
 </div>
 
 <section class="panel" id="panel-dir" role="tabpanel" aria-labelledby="tab-dir">
@@ -592,15 +599,61 @@
   tabs.forEach(function (pair) {
     document.getElementById(pair[0]).addEventListener("click", function () { showTab(pair[0]); });
   });
+  var activeTab = "tab-dir";
   function showTab(id) {
+    activeTab = id;
     tabs.forEach(function (pair) {
       var on = pair[0] === id;
       document.getElementById(pair[0]).setAttribute("aria-selected", on ? "true" : "false");
       document.getElementById(pair[1]).hidden = !on;
     });
-    if (history.replaceState) history.replaceState(null, "", id === "tab-tools" ? "#tools" : location.pathname);
+    syncUrl();
   }
-  if (location.hash === "#tools") showTab("tab-tools");
+
+  // ---------- shareable links ----------
+  // The address bar mirrors the current tab, search, filters, sort and page, so any view can be shared.
+  var ready = false;
+  function syncUrl() {
+    if (!ready || !history.replaceState) return;
+    var params = [];
+    function add(k, v) { if (v) params.push(k + "=" + encodeURIComponent(v)); }
+    add("tab", activeTab === "tab-tools" ? "tools" : "");
+    add("q", q.value.trim());
+    add("cat", fCategory.value);
+    add("type", fType.value);
+    add("lang", fLanguage.value);
+    add("access", fAccess.value);
+    add("sort", sortSel.value === "year" ? "year" : "");
+    add("page", page > 1 ? String(page) : "");
+    add("tq", tq.value.trim());
+    add("taccess", tfAccess.value);
+    add("tstatus", tfStatus.value);
+    history.replaceState(null, "", location.pathname + (params.length ? "?" + params.join("&") : ""));
+  }
+
+  var copyBtn = document.getElementById("copy");
+  copyBtn.addEventListener("click", function () {
+    var url = location.href;
+    function done(ok) {
+      copyBtn.textContent = ok ? "Link copied" : "Copy failed";
+      setTimeout(function () { copyBtn.textContent = "Copy link"; }, 1800);
+    }
+    function fallback() {
+      var ta = el("textarea", { readonly: "", style: "position:fixed;opacity:0" });
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(function () { done(true); }, fallback);
+    } else {
+      fallback();
+    }
+  });
 
   // ---------- directory ----------
   var PAGE = 20;
@@ -761,6 +814,7 @@
       });
       pagerEl.appendChild(pagerButton("Next ›", page + 1, { disabled: page === pages, aria: "Next page" }));
     }
+    syncUrl();
   }
 
   var timer;
@@ -777,8 +831,6 @@
     sortSel.value = "name";
     applyFilters();
   });
-
-  applyFilters();
 
   // ---------- tool access ----------
   var tq = document.getElementById("tq");
@@ -828,12 +880,38 @@
     tcount.textContent = rows.length === tools.length
       ? "Showing all " + tools.length + " tools"
       : rows.length + " of " + tools.length + " tools match";
+    syncUrl();
   }
 
   tq.addEventListener("input", renderTools);
   tfAccess.addEventListener("change", renderTools);
   tfStatus.addEventListener("change", renderTools);
+
+  // ---------- initial state from the URL ----------
+  var params = new URLSearchParams(location.search);
+  function setSelect(sel, v) {
+    if (!v) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === v) { sel.value = v; return; }
+    }
+  }
+  q.value = params.get("q") || "";
+  setSelect(fCategory, params.get("cat"));
+  setSelect(fType, params.get("type"));
+  setSelect(fLanguage, params.get("lang"));
+  setSelect(fAccess, params.get("access"));
+  setSelect(sortSel, params.get("sort"));
+  tq.value = params.get("tq") || "";
+  setSelect(tfAccess, params.get("taccess"));
+  setSelect(tfStatus, params.get("tstatus"));
+
+  applyFilters();
+  page = parseInt(params.get("page"), 10) || 1;
+  render();
   renderTools();
+  showTab(params.get("tab") === "tools" || location.hash === "#tools" ? "tab-tools" : "tab-dir");
+  ready = true;
+  syncUrl();
 })();
 </script>
 </body>
