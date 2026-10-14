@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malaysia Health Questionnaires Directory — Drakmal</title>
+<meta name="description" content="Searchable directory of health questionnaires developed, translated or validated in Malaysia, with the validation study, languages, psychometrics and access/licence route for each.">
+<link rel="canonical" href="https://questionnaires.drakmal.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://questionnaires.drakmal.com/">
+<meta property="og:site_name" content="Drakmal">
+<meta property="og:title" content="Malaysia Health Questionnaires Directory">
+<meta property="og:description" content="Health questionnaires developed, translated or validated in Malaysia, with the validation study and access route for each.">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Malaysia Health Questionnaires Directory">
+<meta name="twitter:description" content="Health questionnaires developed, translated or validated in Malaysia.">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --text: #1a1d23;
+    --muted: #5f6672;
+    --border: #e3e5ea;
+    --accent: #2f6fed;
+    --accent-text: #ffffff;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+    --green: #1f7a4d;
+    --amber: #9a6100;
+    --red: #b42318;
+    --grey: #5f6672;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --surface: #1d2025;
+      --text: #eceef1;
+      --muted: #9aa1ac;
+      --border: #2b2f36;
+      --accent: #5b8bf0;
+      --accent-text: #0e1116;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+      --green: #5cc58f;
+      --amber: #e0a740;
+      --red: #f0857a;
+      --grey: #9aa1ac;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 48px 16px;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  header .back {
+    display: inline-block;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    margin-bottom: 16px;
+  }
+
+  header .back:hover { color: var(--accent); }
+
+  header h1 {
+    font-size: 2rem;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    margin: 0 auto;
+    max-width: 620px;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  a { color: var(--accent); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .tabs button {
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 14px;
+    margin-bottom: -1px;
+    cursor: pointer;
+  }
+
+  .tabs button[aria-selected="true"] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .panel[hidden] { display: none; }
+
+  .controls {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .controls .search { grid-column: 1 / -1; }
+
+  .controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 0;
+  }
+
+  input[type="search"], select {
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 10px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  input[type="search"]:focus, select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+
+  @media (max-width: 760px) {
+    .controls { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .controls { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.6rem; }
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 4px 12px;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    cursor: pointer;
+  }
+
+  .btn:hover { border-color: var(--accent); }
+
+  .btn--primary {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .entry summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .entry summary::-webkit-details-marker { display: none; }
+
+  .entry summary::before {
+    content: "›";
+    color: var(--muted);
+    font-size: 1.2rem;
+    line-height: 1.1;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .entry[open] summary::before { transform: rotate(90deg); }
+
+  .entry .head { flex: 1; min-width: 0; }
+
+  .entry h2 {
+    font-size: 1rem;
+    margin: 0 0 4px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .entry .sub {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    color: var(--grey);
+    white-space: nowrap;
+  }
+
+  .badge--green { color: var(--green); }
+  .badge--amber { color: var(--amber); }
+  .badge--red { color: var(--red); }
+  .badge--accent { color: var(--accent); }
+
+  .detail {
+    border-top: 1px solid var(--border);
+    padding: 14px 16px 16px 40px;
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 8px 16px;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .detail dt {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .detail dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 560px) {
+    .detail {
+      grid-template-columns: 1fr;
+      gap: 2px;
+      padding-left: 16px;
+    }
+    .detail dd { margin-bottom: 8px; }
+  }
+
+  .more {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 16px;
+  }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  td.num { text-align: right; }
+
+  @media (max-width: 760px) {
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    td { border: none; padding: 2px 0; }
+    td[data-label]::before {
+      content: attr(data-label) ": ";
+      color: var(--muted);
+      font-weight: 600;
+    }
+    td.num { text-align: left; }
+  }
+
+  footer {
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  footer p { margin: 4px auto; max-width: 680px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="back" href="https://drakmal.com/">← drakmal.com</a>
+  <h1>Malaysia Health Questionnaires Directory</h1>
+  <p>Health questionnaires developed, translated or validated in Malaysia, with the validation study, languages, psychometrics and access route for each. <span id="summary"></span></p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="tab-dir" aria-controls="panel-dir" aria-selected="true">Directory</button>
+  <button role="tab" id="tab-tools" aria-controls="panel-tools" aria-selected="false">Tool access</button>
+</div>
+
+<section class="panel" id="panel-dir" role="tabpanel" aria-labelledby="tab-dir">
+  <div class="controls">
+    <label class="search">Search
+      <input type="search" id="q" placeholder="Instrument, condition, population, author, journal…" autocomplete="off">
+    </label>
+    <label>Category <select id="f-category"></select></label>
+    <label>Instrument type <select id="f-type"></select></label>
+    <label>Language <select id="f-language"></select></label>
+    <label>Access / licence <select id="f-access"></select></label>
+    <label>Items published <select id="f-items"></select></label>
+    <label>Sort by
+      <select id="sort">
+        <option value="name">Instrument (A–Z)</option>
+        <option value="year">Year (newest first)</option>
+      </select>
+    </label>
+  </div>
+  <div class="status">
+    <span id="count" aria-live="polite"></span>
+    <button class="btn" id="clear" type="button">Clear filters</button>
+  </div>
+  <div class="list" id="list"></div>
+  <div class="more"><button class="btn btn--primary" id="more" type="button" hidden>Show more</button></div>
+</section>
+
+<section class="panel" id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
+  <div class="controls">
+    <label class="search">Search
+      <input type="search" id="tq" placeholder="Tool, licence, source…" autocomplete="off">
+    </label>
+    <label>Access / licence <select id="tf-access"></select></label>
+    <label>Status of check <select id="tf-status"></select></label>
+  </div>
+  <div class="status"><span id="tcount" aria-live="polite"></span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>Access / licence</th>
+          <th>Licence details</th>
+          <th>Where to get it</th>
+          <th>Status of check</th>
+          <th>Entries</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p>This directory lists validation studies; it does not host questionnaire forms. Licence terms change, so check the official source before using or posting any questionnaire. Printed items in an article do not grant permission to use a licensed tool.</p>
+  <p>Psychometric details are summarised from abstracts. Bibliographic data for PubMed records from PubMed (National Library of Medicine).</p>
+  <p id="built"></p>
+  <p><a href="https://drakmal.com/">drakmal.com</a></p>
+</footer>
+
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var M = window.MHQ;
+  if (!M) {
+    document.getElementById("list").textContent = "Could not load the directory data.";
+    return;
+  }
+
+  // Turn compact arrays back into objects.
+  function toObjects(rows, fields) {
+    return rows.map(function (r) {
+      var o = {};
+      fields.forEach(function (f, i) { o[f] = r[i]; });
+      return o;
+    });
+  }
+
+  var entries = toObjects(M.directory, M.meta.dirFields);
+  var tools = toObjects(M.tools, M.meta.toolFields);
+
+  entries.forEach(function (e) {
+    e.langList = e.languages.split(/;\s*/).map(function (s) { return s.trim(); }).filter(Boolean);
+    e.haystack = [e.instrument, e.domain, e.category, e.population, e.authors, e.title,
+      e.journal, e.languages, e.psychometrics].join(" ").toLowerCase();
+  });
+  tools.forEach(function (t) {
+    t.haystack = [t.key, t.example, t.access, t.licence, t.where, t.status].join(" ").toLowerCase();
+  });
+
+  document.getElementById("summary").textContent =
+    entries.length + " validation studies; licence and source details for " + tools.length + " widely used tools.";
+  document.getElementById("built").textContent = "Data updated " + M.meta.built + ".";
+
+  // ---------- helpers ----------
+  function el(tag, attrs, children) {
+    var n = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (k) {
+        if (k === "text") n.textContent = attrs[k];
+        else n.setAttribute(k, attrs[k]);
+      });
+    }
+    (children || []).forEach(function (c) {
+      if (c == null || c === "") return;
+      n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  function safeUrl(u) {
+    return /^https?:\/\//i.test(u || "") ? u : "";
+  }
+
+  function link(url, label) {
+    url = safeUrl(url);
+    if (!url) return label ? document.createTextNode(label) : null;
+    return el("a", { href: url, target: "_blank", rel: "noopener", text: label || url });
+  }
+
+  function accessClass(a) {
+    if (/^Free to use/.test(a)) return "badge--green";
+    if (/^Free after/.test(a)) return "badge--green";
+    if (/^Permission/.test(a)) return "badge--amber";
+    if (/^Licence|fee/i.test(a)) return "badge--red";
+    if (/^Contact/.test(a)) return "badge--accent";
+    return "";
+  }
+
+  function fillSelect(sel, allLabel, values) {
+    sel.appendChild(el("option", { value: "", text: allLabel }));
+    values.forEach(function (v) {
+      sel.appendChild(el("option", { value: v[0], text: v[0] + " (" + v[1] + ")" }));
+    });
+  }
+
+  function tally(list, getter) {
+    var c = {};
+    list.forEach(function (x) {
+      [].concat(getter(x)).forEach(function (v) { if (v) c[v] = (c[v] || 0) + 1; });
+    });
+    return c;
+  }
+
+  function byCount(c) {
+    return Object.keys(c).map(function (k) { return [k, c[k]]; })
+      .sort(function (a, b) { return b[1] - a[1] || a[0].localeCompare(b[0]); });
+  }
+
+  function byName(c) {
+    return Object.keys(c).sort(function (a, b) {
+      if (a === "Other") return 1;
+      if (b === "Other") return -1;
+      return a.localeCompare(b);
+    }).map(function (k) { return [k, c[k]]; });
+  }
+
+  // ---------- tabs ----------
+  var tabs = [["tab-dir", "panel-dir"], ["tab-tools", "panel-tools"]];
+  tabs.forEach(function (pair) {
+    document.getElementById(pair[0]).addEventListener("click", function () { showTab(pair[0]); });
+  });
+  function showTab(id) {
+    tabs.forEach(function (pair) {
+      var on = pair[0] === id;
+      document.getElementById(pair[0]).setAttribute("aria-selected", on ? "true" : "false");
+      document.getElementById(pair[1]).hidden = !on;
+    });
+    if (history.replaceState) history.replaceState(null, "", id === "tab-tools" ? "#tools" : location.pathname);
+  }
+  if (location.hash === "#tools") showTab("tab-tools");
+
+  // ---------- directory ----------
+  var PAGE = 50;
+  var shown = PAGE;
+  var current = [];
+
+  var q = document.getElementById("q");
+  var fCategory = document.getElementById("f-category");
+  var fType = document.getElementById("f-type");
+  var fLanguage = document.getElementById("f-language");
+  var fAccess = document.getElementById("f-access");
+  var fItems = document.getElementById("f-items");
+  var sortSel = document.getElementById("sort");
+  var listEl = document.getElementById("list");
+  var countEl = document.getElementById("count");
+  var moreBtn = document.getElementById("more");
+
+  fillSelect(fCategory, "All categories", byName(tally(entries, function (e) { return e.category; })));
+  fillSelect(fType, "All types", byCount(tally(entries, function (e) { return e.type; })));
+  fillSelect(fLanguage, "All languages", byCount(tally(entries, function (e) { return e.langList; })));
+  fillSelect(fAccess, "All access routes", byCount(tally(entries, function (e) { return e.access; })));
+  fillSelect(fItems, "Any", byCount(tally(entries, function (e) { return e.items; })));
+
+  function citation(e) {
+    var parts = [];
+    if (e.authors) parts.push(e.authors + ".");
+    if (e.title) parts.push(e.title.replace(/\.?$/, "."));
+    var j = [e.journal, e.year].filter(Boolean).join(" ");
+    if (e.volpages) j += (j ? ";" : "") + e.volpages;
+    if (j) parts.push(j + ".");
+    return parts.join(" ");
+  }
+
+  function row(label, value) {
+    if (value == null || value === "") return [];
+    return [el("dt", { text: label }), el("dd", null, [value])];
+  }
+
+  function renderEntry(e) {
+    var badges = el("div", { class: "badges" }, [
+      el("span", { class: "badge", text: e.type }),
+      e.access ? el("span", { class: "badge " + accessClass(e.access), text: e.access }) : null,
+      e.inclusion === "multi" ? el("span", { class: "badge", text: "Multi-country sample" }) : null
+    ]);
+    var sub = [e.category, e.langList.join(", "), e.year].filter(Boolean).join(" · ");
+    var summary = el("summary", null, [
+      el("div", { class: "head" }, [
+        el("h2", { text: e.instrument }),
+        el("div", { class: "sub", text: sub }),
+        badges
+      ])
+    ]);
+
+    var articleLinks = el("span", null, [
+      link(e.link, e.doi ? "doi:" + e.doi : "Article / source"),
+      e.pmid && /^\d+$/.test(e.pmid) ? " · " : null,
+      e.pmid && /^\d+$/.test(e.pmid) ? link("https://pubmed.ncbi.nlm.nih.gov/" + e.pmid + "/", "PubMed " + e.pmid) : null
+    ]);
+
+    var where = e.where || e.accessLink
+      ? el("span", null, [e.where, e.where && safeUrl(e.accessLink) ? " · " : null, link(e.accessLink, "Open")])
+      : "";
+    var items = [e.items, e.itemNotes].filter(Boolean).join(". ");
+
+    var dl = el("dl", { class: "detail" }, [].concat(
+      row("Domain / construct", e.domain),
+      row("Population", e.population),
+      row("Sample size (n)", e.n),
+      row("Psychometrics", e.psychometrics),
+      row("Study", citation(e)),
+      row("Links", articleLinks),
+      row("Access / licence", [e.access, e.licence].filter(Boolean).join(": ")),
+      row("Where to get it", where),
+      row("Items published", items),
+      row("Source", e.source)
+    ));
+
+    return el("details", { class: "entry" }, [summary, dl]);
+  }
+
+  function applyFilters() {
+    var terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    var cat = fCategory.value, type = fType.value, lang = fLanguage.value,
+        access = fAccess.value, items = fItems.value;
+    current = entries.filter(function (e) {
+      if (cat && e.category !== cat) return false;
+      if (type && e.type !== type) return false;
+      if (lang && e.langList.indexOf(lang) === -1) return false;
+      if (access && e.access !== access) return false;
+      if (items && e.items !== items) return false;
+      for (var i = 0; i < terms.length; i++) {
+        if (e.haystack.indexOf(terms[i]) === -1) return false;
+      }
+      return true;
+    });
+    if (sortSel.value === "year") {
+      current.sort(function (a, b) {
+        return (b.year || "").localeCompare(a.year || "") || a.instrument.localeCompare(b.instrument);
+      });
+    } else {
+      current.sort(function (a, b) { return a.instrument.localeCompare(b.instrument); });
+    }
+    shown = PAGE;
+    render();
+  }
+
+  function render() {
+    listEl.textContent = "";
+    var frag = document.createDocumentFragment();
+    current.slice(0, shown).forEach(function (e) { frag.appendChild(renderEntry(e)); });
+    listEl.appendChild(frag);
+    if (!current.length) {
+      listEl.appendChild(el("div", { class: "empty", text: "No entries match these filters." }));
+    }
+    countEl.textContent = current.length === entries.length
+      ? "Showing all " + entries.length + " entries"
+      : current.length + " of " + entries.length + " entries match";
+    var left = current.length - shown;
+    moreBtn.hidden = left <= 0;
+    moreBtn.textContent = "Show more (" + Math.max(left, 0) + " left)";
+  }
+
+  var timer;
+  q.addEventListener("input", function () {
+    clearTimeout(timer);
+    timer = setTimeout(applyFilters, 150);
+  });
+  [fCategory, fType, fLanguage, fAccess, fItems, sortSel].forEach(function (s) {
+    s.addEventListener("change", applyFilters);
+  });
+  moreBtn.addEventListener("click", function () {
+    shown += PAGE;
+    render();
+  });
+  document.getElementById("clear").addEventListener("click", function () {
+    q.value = "";
+    [fCategory, fType, fLanguage, fAccess, fItems].forEach(function (s) { s.value = ""; });
+    sortSel.value = "name";
+    applyFilters();
+  });
+
+  applyFilters();
+
+  // ---------- tool access ----------
+  var tq = document.getElementById("tq");
+  var tfAccess = document.getElementById("tf-access");
+  var tfStatus = document.getElementById("tf-status");
+  var tbody = document.getElementById("tbody");
+  var tcount = document.getElementById("tcount");
+
+  fillSelect(tfAccess, "All access routes", byCount(tally(tools, function (t) { return t.access; })));
+  fillSelect(tfStatus, "Any", byCount(tally(tools, function (t) { return t.status; })));
+
+  var toolsSorted = tools.slice().sort(function (a, b) { return a.key.localeCompare(b.key); });
+
+  function renderTools() {
+    var terms = tq.value.toLowerCase().split(/\s+/).filter(Boolean);
+    var access = tfAccess.value, status = tfStatus.value;
+    var rows = toolsSorted.filter(function (t) {
+      if (access && t.access !== access) return false;
+      if (status && t.status !== status) return false;
+      for (var i = 0; i < terms.length; i++) {
+        if (t.haystack.indexOf(terms[i]) === -1) return false;
+      }
+      return true;
+    });
+    tbody.textContent = "";
+    var frag = document.createDocumentFragment();
+    rows.forEach(function (t) {
+      var name = el("td", { "data-label": "Tool" }, [
+        el("strong", { text: t.key }),
+        t.example && t.example !== t.key ? el("div", { class: "sub", text: t.example }) : null
+      ]);
+      frag.appendChild(el("tr", null, [
+        name,
+        el("td", { "data-label": "Access" }, [
+          t.access ? el("span", { class: "badge " + accessClass(t.access), text: t.access }) : null
+        ]),
+        el("td", { "data-label": "Licence", text: t.licence }),
+        el("td", { "data-label": "Where" }, [t.where, t.where && safeUrl(t.link) ? " · " : null, link(t.link, "Open")]),
+        el("td", { "data-label": "Status", text: t.status }),
+        el("td", { class: "num", "data-label": "Entries", text: String(t.entries) })
+      ]));
+    });
+    if (!rows.length) {
+      frag.appendChild(el("tr", null, [el("td", { colspan: "6", class: "empty", text: "No tools match." })]));
+    }
+    tbody.appendChild(frag);
+    tcount.textContent = rows.length === tools.length
+      ? "Showing all " + tools.length + " tools"
+      : rows.length + " of " + tools.length + " tools match";
+  }
+
+  tq.addEventListener("input", renderTools);
+  tfAccess.addEventListener("change", renderTools);
+  tfStatus.addEventListener("change", renderTools);
+  renderTools();
+})();
+</script>
+</body>
+</html>
