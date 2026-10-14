@@ -93,6 +93,18 @@
     line-height: 1.5;
   }
 
+  header .coverage {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.85rem;
+  }
+
+  header .coverage:empty { display: none; }
+
   a { color: var(--accent); }
 
   .tabs {
@@ -306,11 +318,30 @@
     .detail dd { margin-bottom: 8px; }
   }
 
-  .more {
+  .pager {
     display: flex;
     justify-content: center;
-    margin-top: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 20px;
   }
+
+  .pager .btn { min-width: 38px; }
+
+  .pager .btn[aria-current="page"] {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+
+  .pager .btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    border-color: var(--border);
+  }
+
+  .pager .gap { color: var(--muted); padding: 0 4px; }
 
   .empty {
     text-align: center;
@@ -383,7 +414,8 @@
 <header>
   <a class="back" href="https://drakmal.com/">← drakmal.com</a>
   <h1>Malaysia Health Questionnaires Directory</h1>
-  <p>Health questionnaires developed, translated or validated in Malaysia, with the validation study, languages, psychometrics and access route for each. <span id="summary"></span></p>
+  <p>Health questionnaires developed, translated or validated in Malaysia, with the validation study, languages, psychometrics and access route for each.</p>
+  <p class="coverage" id="coverage"></p>
 </header>
 
 <div class="tabs" role="tablist">
@@ -400,7 +432,6 @@
     <label>Instrument type <select id="f-type"></select></label>
     <label>Language <select id="f-language"></select></label>
     <label>Access / licence <select id="f-access"></select></label>
-    <label>Items published <select id="f-items"></select></label>
     <label>Sort by
       <select id="sort">
         <option value="name">Instrument (A–Z)</option>
@@ -413,7 +444,7 @@
     <button class="btn" id="clear" type="button">Clear filters</button>
   </div>
   <div class="list" id="list"></div>
-  <div class="more"><button class="btn btn--primary" id="more" type="button" hidden>Show more</button></div>
+  <nav class="pager" id="pager" aria-label="Pages"></nav>
 </section>
 
 <section class="panel" id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
@@ -483,9 +514,15 @@
     t.haystack = [t.key, t.example, t.access, t.licence, t.where, t.status].join(" ").toLowerCase();
   });
 
-  document.getElementById("summary").textContent =
-    entries.length + " validation studies; licence and source details for " + tools.length + " widely used tools.";
-  document.getElementById("built").textContent = "Data updated " + M.meta.built + ".";
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"];
+  var b = (M.meta.built || "").split("-");
+  var builtText = b.length === 3 ? (+b[2]) + " " + MONTHS[+b[1] - 1] + " " + b[0] : M.meta.built;
+  var coverage = [];
+  if (M.meta.yearMin && M.meta.yearMax) coverage.push("Studies published " + M.meta.yearMin + "–" + M.meta.yearMax);
+  if (builtText) coverage.push("Last updated " + builtText);
+  document.getElementById("coverage").textContent = coverage.join(" · ");
+  document.getElementById("built").textContent = builtText ? "Last updated " + builtText + "." : "";
 
   // ---------- helpers ----------
   function el(tag, attrs, children) {
@@ -566,8 +603,8 @@
   if (location.hash === "#tools") showTab("tab-tools");
 
   // ---------- directory ----------
-  var PAGE = 50;
-  var shown = PAGE;
+  var PAGE = 20;
+  var page = 1;
   var current = [];
 
   var q = document.getElementById("q");
@@ -575,17 +612,15 @@
   var fType = document.getElementById("f-type");
   var fLanguage = document.getElementById("f-language");
   var fAccess = document.getElementById("f-access");
-  var fItems = document.getElementById("f-items");
   var sortSel = document.getElementById("sort");
   var listEl = document.getElementById("list");
   var countEl = document.getElementById("count");
-  var moreBtn = document.getElementById("more");
+  var pagerEl = document.getElementById("pager");
 
   fillSelect(fCategory, "All categories", byName(tally(entries, function (e) { return e.category; })));
   fillSelect(fType, "All types", byCount(tally(entries, function (e) { return e.type; })));
   fillSelect(fLanguage, "All languages", byCount(tally(entries, function (e) { return e.langList; })));
   fillSelect(fAccess, "All access routes", byCount(tally(entries, function (e) { return e.access; })));
-  fillSelect(fItems, "Any", byCount(tally(entries, function (e) { return e.items; })));
 
   function citation(e) {
     var parts = [];
@@ -647,13 +682,12 @@
   function applyFilters() {
     var terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
     var cat = fCategory.value, type = fType.value, lang = fLanguage.value,
-        access = fAccess.value, items = fItems.value;
+        access = fAccess.value;
     current = entries.filter(function (e) {
       if (cat && e.category !== cat) return false;
       if (type && e.type !== type) return false;
       if (lang && e.langList.indexOf(lang) === -1) return false;
       if (access && e.access !== access) return false;
-      if (items && e.items !== items) return false;
       for (var i = 0; i < terms.length; i++) {
         if (e.haystack.indexOf(terms[i]) === -1) return false;
       }
@@ -666,24 +700,67 @@
     } else {
       current.sort(function (a, b) { return a.instrument.localeCompare(b.instrument); });
     }
-    shown = PAGE;
+    page = 1;
     render();
   }
 
+  // Page numbers to show: first, last, and up to two either side of the current page.
+  function pageList(cur, total) {
+    var out = [];
+    for (var p = 1; p <= total; p++) {
+      if (p === 1 || p === total || Math.abs(p - cur) <= 2) out.push(p);
+      else if (out[out.length - 1] !== "…") out.push("…");
+    }
+    return out;
+  }
+
+  function pagerButton(label, target, opts) {
+    var btn = el("button", { class: "btn", type: "button", text: label });
+    if (opts && opts.current) btn.setAttribute("aria-current", "page");
+    if (opts && opts.aria) btn.setAttribute("aria-label", opts.aria);
+    if (opts && opts.disabled) btn.disabled = true;
+    else btn.addEventListener("click", function () { goTo(target); });
+    return btn;
+  }
+
+  function goTo(p) {
+    page = p;
+    render();
+    var top = document.querySelector(".tabs");
+    if (top && top.scrollIntoView) top.scrollIntoView({ block: "start" });
+  }
+
   function render() {
+    var pages = Math.max(1, Math.ceil(current.length / PAGE));
+    if (page > pages) page = pages;
+    var start = (page - 1) * PAGE;
+    var slice = current.slice(start, start + PAGE);
+
     listEl.textContent = "";
     var frag = document.createDocumentFragment();
-    current.slice(0, shown).forEach(function (e) { frag.appendChild(renderEntry(e)); });
+    slice.forEach(function (e) { frag.appendChild(renderEntry(e)); });
     listEl.appendChild(frag);
     if (!current.length) {
       listEl.appendChild(el("div", { class: "empty", text: "No entries match these filters." }));
     }
-    countEl.textContent = current.length === entries.length
-      ? "Showing all " + entries.length + " entries"
-      : current.length + " of " + entries.length + " entries match";
-    var left = current.length - shown;
-    moreBtn.hidden = left <= 0;
-    moreBtn.textContent = "Show more (" + Math.max(left, 0) + " left)";
+
+    var range = (start + 1) + "–" + (start + slice.length) + " of ";
+    countEl.textContent = !current.length
+      ? "No matching entries (" + entries.length + " total)"
+      : current.length === entries.length
+        ? "Showing " + range + entries.length + " entries"
+        : "Showing " + range + current.length + " matching entries (" + entries.length + " total)";
+
+    pagerEl.textContent = "";
+    if (pages > 1) {
+      pagerEl.appendChild(pagerButton("‹ Prev", page - 1, { disabled: page === 1, aria: "Previous page" }));
+      pageList(page, pages).forEach(function (p) {
+        pagerEl.appendChild(p === "…"
+          ? el("span", { class: "gap", text: "…" })
+          : pagerButton(String(p), p, { current: p === page, aria: "Page " + p }));
+      });
+      pagerEl.appendChild(pagerButton("Next ›", page + 1, { disabled: page === pages, aria: "Next page" }));
+    }
   }
 
   var timer;
@@ -691,16 +768,12 @@
     clearTimeout(timer);
     timer = setTimeout(applyFilters, 150);
   });
-  [fCategory, fType, fLanguage, fAccess, fItems, sortSel].forEach(function (s) {
+  [fCategory, fType, fLanguage, fAccess, sortSel].forEach(function (s) {
     s.addEventListener("change", applyFilters);
-  });
-  moreBtn.addEventListener("click", function () {
-    shown += PAGE;
-    render();
   });
   document.getElementById("clear").addEventListener("click", function () {
     q.value = "";
-    [fCategory, fType, fLanguage, fAccess, fItems].forEach(function (s) { s.value = ""; });
+    [fCategory, fType, fLanguage, fAccess].forEach(function (s) { s.value = ""; });
     sortSel.value = "name";
     applyFilters();
   });
