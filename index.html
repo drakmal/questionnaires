@@ -349,6 +349,16 @@
 
   .pager .gap { color: var(--muted); padding: 0 4px; }
 
+  .suggest {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 20px 0 0;
+  }
+
+  .suggest a { font-weight: 600; text-decoration: none; }
+  .suggest a:hover { text-decoration: underline; }
+
   .empty {
     text-align: center;
     color: var(--muted);
@@ -452,6 +462,7 @@
   </div>
   <div class="list" id="list"></div>
   <nav class="pager" id="pager" aria-label="Pages"></nav>
+  <p class="suggest">Know a Malaysian questionnaire we've missed? <a href="https://forms.gle/hrrC3HFErQ25yJsVA" target="_blank" rel="noopener">Suggest it →</a></p>
 </section>
 
 <section class="panel" id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
@@ -484,7 +495,7 @@
   <p>This directory lists validation studies; it does not host questionnaire forms. Licence terms change, so check the official source before using or posting any questionnaire. Printed items in an article do not grant permission to use a licensed tool.</p>
   <p>Psychometric details are summarised from abstracts. Bibliographic data for PubMed records from PubMed (National Library of Medicine).</p>
   <p id="built"></p>
-  <p><a href="https://drakmal.com/">drakmal.com</a></p>
+  <p><a href="https://forms.gle/hrrC3HFErQ25yJsVA" target="_blank" rel="noopener">Suggest a questionnaire</a> · <a href="https://drakmal.com/">drakmal.com</a></p>
 </footer>
 
 </div>
@@ -656,6 +667,7 @@
   });
 
   // ---------- directory ----------
+  var SUGGEST_URL = "https://forms.gle/hrrC3HFErQ25yJsVA";
   var PAGE = 20;
   var page = 1;
   var current = [];
@@ -794,7 +806,10 @@
     slice.forEach(function (e) { frag.appendChild(renderEntry(e)); });
     listEl.appendChild(frag);
     if (!current.length) {
-      listEl.appendChild(el("div", { class: "empty", text: "No entries match these filters." }));
+      listEl.appendChild(el("div", { class: "empty" }, [
+        "No entries match these filters. ",
+        link(SUGGEST_URL, "Suggest a questionnaire we've missed →")
+      ]));
     }
 
     var range = (start + 1) + "–" + (start + slice.length) + " of ";
