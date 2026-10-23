@@ -17,7 +17,8 @@ parent folder by `build_site.py` (kept outside this repo, next to the workbooks)
     python build_site.py
 
 The script drops Borderline rows except those on its `BORDERLINE_ALLOW` list (approved after review;
-matched by instrument name), takes article/access URLs from the cell hyperlinks, and
+matched by instrument name), overlays licence look-ups from `licence_research.csv` (also matched by
+instrument name; see the parent folder), takes article/access URLs from the cell hyperlinks, and
 recounts the Tool access "Entries" column over the published rows. It stops with an error if the
 column headers change or the row count differs from `EXPECTED_ROWS`. Commit and push the new
 `data.js` (and bump `lastmod` in `sitemap.xml`) to redeploy.
